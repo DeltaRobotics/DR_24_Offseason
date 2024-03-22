@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="outreachBotCoding")
-//@Disabled
+@Disabled
 
 public class outreachBotCoding extends LinearOpMode
 {
