@@ -78,10 +78,10 @@ public class introToJavaBot extends LinearOpMode
             motorLF.setPower((((-gamepad1.left_stick_y + gamepad1.left_stick_x) * 1) + (gamepad1.right_stick_x * 1)) * speed);
             /*
             if(gamepad1.a && button){
-                if(speed==1){ speed=.5;
+                if(speed==1){
+                    speed=.5;
                 }
-                else {speed=1;
-                }
+                else {speed=1;}
                 button = false;
             }
             if(!gamepad1.a && !button){
@@ -94,9 +94,9 @@ public class introToJavaBot extends LinearOpMode
 
             if(gamepad1.dpad_up) {
                 //up
-                Encoder=100;
+                Encoder=300;
 
-                wrist.setPosition(.62);
+                wrist.setPosition(.67);
             }
             if(gamepad1.dpad_down) {
                 //down
@@ -104,7 +104,17 @@ public class introToJavaBot extends LinearOpMode
 
                 wrist.setPosition(.42);
             }
-            /*
+            if(gamepad1.dpad_right) {
+                // mid position
+                Encoder=150;
+                wrist.setPosition(.5);
+            }
+            if(gamepad1.dpad_left) {
+                // mid high position
+                Encoder=200;
+                wrist.setPosition(.6);
+            }
+            //fine adjust
             if(gamepad1.x&&buttonx){
                 wrist.setPosition(wrist.getPosition()-.05);
                 buttonx=false;
@@ -120,7 +130,7 @@ public class introToJavaBot extends LinearOpMode
                 buttony = true;
             }
 
-             */
+
             if (gamepad1.right_bumper){
                 clawL.setPosition(.4);
                 clawR.setPosition(.65);
@@ -134,9 +144,10 @@ public class introToJavaBot extends LinearOpMode
             arm.setPower(1);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
+            telemetry.addData("encoder", wrist.getPosition());
             telemetry.addData("wrist", wrist.getPosition());
             telemetry.update();
+
         }
     }
 }
