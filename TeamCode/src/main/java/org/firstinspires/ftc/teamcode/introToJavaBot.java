@@ -19,13 +19,15 @@ public class introToJavaBot extends LinearOpMode
     public DcMotor motorLF = null;
     public DcMotor motorRB = null;
     public DcMotor motorLB = null;
-    public DcMotor arm = null;
+    public DcMotor shoulderR = null;
+    public DcMotor shoulderL = null;
+
 
     public Servo wrist = null;
     public Servo clawR = null;
     public Servo clawL = null;
 
-    int Encoder = 30;
+    int Encoder = 10;
     double speed = .5;
 
     boolean button = true;
@@ -39,7 +41,8 @@ public class introToJavaBot extends LinearOpMode
         motorLF = hardwareMap.dcMotor.get("motorLF");
         motorRB = hardwareMap.dcMotor.get("motorRB");
         motorLB = hardwareMap.dcMotor.get("motorLB");
-        arm = hardwareMap.dcMotor.get("arm");
+        shoulderR = hardwareMap.dcMotor.get("shoulderR");
+        shoulderL = hardwareMap.dcMotor.get("shoulderL");
 
         wrist = hardwareMap.servo.get("wrist");
         clawR = hardwareMap.servo.get("clawR");
@@ -50,19 +53,24 @@ public class introToJavaBot extends LinearOpMode
         motorLF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shoulderL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        shoulderR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motorRB.setDirection(DcMotorSimple.Direction.REVERSE);
         motorRF.setDirection(DcMotorSimple.Direction.REVERSE);
-        arm.setDirection(DcMotorSimple.Direction.REVERSE);
+        shoulderL.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shoulderR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shoulderL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shoulderR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shoulderL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        arm.setTargetPosition(Encoder);
-        arm.setPower(1);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        shoulderR.setTargetPosition(Encoder);
+        shoulderL.setTargetPosition(Encoder);
+        shoulderR.setPower(1);
+        shoulderL.setPower(1);
+        shoulderR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        shoulderL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         wrist.setPosition(.42);
         clawL.setPosition(.6);
@@ -94,16 +102,17 @@ public class introToJavaBot extends LinearOpMode
 
             if(gamepad1.dpad_up) {
                 //up
-                Encoder=300;
+                Encoder=40;
 
-                wrist.setPosition(.67);
+                wrist.setPosition(.50);
             }
             if(gamepad1.dpad_down) {
                 //down
-                Encoder=30;
+                Encoder=10;
 
                 wrist.setPosition(.42);
             }
+            /*
             if(gamepad1.dpad_right) {
                 // mid position
                 Encoder=150;
@@ -114,6 +123,8 @@ public class introToJavaBot extends LinearOpMode
                 Encoder=200;
                 wrist.setPosition(.6);
             }
+
+
             //fine adjust
             if(gamepad1.x&&buttonx){
                 wrist.setPosition(wrist.getPosition()-.05);
@@ -130,6 +141,8 @@ public class introToJavaBot extends LinearOpMode
                 buttony = true;
             }
 
+             */
+
 
             if (gamepad1.right_bumper){
                 clawL.setPosition(.4);
@@ -140,11 +153,15 @@ public class introToJavaBot extends LinearOpMode
                 clawR.setPosition(.4);
             }
 
-            arm.setTargetPosition(Encoder);
-            arm.setPower(1);
-            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            shoulderR.setTargetPosition(Encoder);
+            shoulderR.setPower(1);
+            shoulderR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            shoulderL.setTargetPosition(Encoder);
+            shoulderL.setPower(1);
+            shoulderL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            telemetry.addData("encoder", wrist.getPosition());
+
+            telemetry.addData("encoder", shoulderL.getCurrentPosition());
             telemetry.addData("wrist", wrist.getPosition());
             telemetry.update();
 
