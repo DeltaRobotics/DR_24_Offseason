@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="firstNewbeAuto")
-@Disabled
+//@Disabled
 
 public class firstNewbeAuto extends LinearOpMode
 {
