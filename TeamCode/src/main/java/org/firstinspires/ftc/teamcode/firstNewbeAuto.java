@@ -11,7 +11,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="firstNewbeAuto")
-//@Disabled
+//
+//
+//
+// @Disabled
 
 public class firstNewbeAuto extends LinearOpMode
 {
@@ -25,7 +28,7 @@ public class firstNewbeAuto extends LinearOpMode
     public Servo clawR = null;
     public Servo clawL = null;
 
-    int Encoder = 30;
+    int Encoder = 50;
 
     @Override
     public void runOpMode() throws InterruptedException

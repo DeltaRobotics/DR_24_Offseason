@@ -102,15 +102,15 @@ public class introToJavaBot extends LinearOpMode
 
             if(gamepad1.dpad_up) {
                 //up
-                Encoder=40;
+                Encoder=55;
 
-                wrist.setPosition(.50);
+                wrist.setPosition(.55);
             }
             if(gamepad1.dpad_down) {
                 //down
-                Encoder=10;
+                Encoder=6;
 
-                wrist.setPosition(.42);
+                wrist.setPosition(.4);
             }
             /*
             if(gamepad1.dpad_right) {
