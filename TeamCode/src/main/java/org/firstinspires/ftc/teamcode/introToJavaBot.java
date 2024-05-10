@@ -27,7 +27,7 @@ public class introToJavaBot extends LinearOpMode
     public Servo clawR = null;
     public Servo clawL = null;
 
-    int Encoder = 10;
+    int Encoder = 6;
     double speed = .5;
 
     boolean button = true;
