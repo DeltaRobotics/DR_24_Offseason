@@ -31,10 +31,10 @@ public class swerveAttempt extends LinearOpMode
 
         robotHardware robot = new robotHardware(hardwareMap);
 
-        right1 = hardwareMap.dcMotor.get("one");
-        right2 = hardwareMap.dcMotor.get("two");
-        left1 = hardwareMap.dcMotor.get("three");
-        left2 = hardwareMap.dcMotor.get("four");
+        right1 = hardwareMap.dcMotor.get("three");
+        right2 = hardwareMap.dcMotor.get("four");
+        left1 = hardwareMap.dcMotor.get("one");
+        left2 = hardwareMap.dcMotor.get("two");
 
         right1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -58,28 +58,30 @@ public class swerveAttempt extends LinearOpMode
 
         while (opModeIsActive()) {
 
-            rightPodPosition = right2.getCurrentPosition()+ right1.getCurrentPosition();
-            leftPodPosition = left2.getCurrentPosition()+ left1.getCurrentPosition();
+            rightPodPosition = right2.getCurrentPosition() + right1.getCurrentPosition();
+            leftPodPosition  = left2.getCurrentPosition()  + left1.getCurrentPosition();
+
             power = (Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x));
+
             aTan = -Math.atan2(gamepad1.left_stick_x, -gamepad1.left_stick_y);
             if (gamepad1.left_stick_x + gamepad1.left_stick_y == 0){
                 aTan = 0;
             }
+
             turnPowerRight = robot.odoPID(6.333 * 57.2958 * aTan, rightPodPosition);
-            turnPowerLeft = robot.odoPID(3.165 * 57.2958 * aTan, leftPodPosition);
+            turnPowerLeft = robot.odoPID(6.333 * 57.2958 * aTan, leftPodPosition);
+
+            right1.setPower(power + turnPowerLeft + gamepad1.right_stick_x);
+            right2.setPower(-power + turnPowerLeft - gamepad1.right_stick_x);
+            left1.setPower(power + turnPowerLeft - gamepad1.right_stick_x);
+            left2.setPower(-power + turnPowerLeft + gamepad1.right_stick_x);
 
 
-            right1.setPower(Range.clip((power + turnPowerRight) * .5, -1, 1));
-            right2.setPower(Range.clip((-power + turnPowerRight) * .5, -1, 1));
-            left1.setPower(power + turnPowerLeft);
-            left2.setPower(-power + turnPowerLeft);
-
-
-
-
+            telemetry.addData("turnPowerLeft", turnPowerLeft);
             telemetry.addData("aTan degrees", 57.2958 * aTan);
             telemetry.addData("stick power", power);
-            telemetry.addData("real power", right1.getPower());
+            telemetry.addData("three power", right1.getPower());
+            telemetry.addData("four power", right2.getPower());
 
             //one +     two -
             telemetry.addData("delta1", rightPodPosition);
