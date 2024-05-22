@@ -23,8 +23,16 @@ public class swerveAttempt extends LinearOpMode
     double aTan = 0;
     double turnPowerRight = 0; //angle of the right stick
     double turnPowerLeft = 0; //angle of the left stick
-
-
+    double turnEncoder = 0;
+    double turnPower = 0;
+    double currentAngle = 0;
+    double newAngle = 0;
+    double rotations = 0;
+    double distance = 0;
+    double opposite = 0;
+    double oppositedistance = 0;
+    double finalAngle = 0;
+    int wheelDirection = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -61,24 +69,114 @@ public class swerveAttempt extends LinearOpMode
             rightPodPosition = right2.getCurrentPosition() + right1.getCurrentPosition();
             leftPodPosition  = left2.getCurrentPosition()  + left1.getCurrentPosition();
 
-            power = (Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x));
+            power = Math.abs(gamepad1.left_stick_y) + Math.abs(gamepad1.left_stick_x);
 
-            aTan = -Math.atan2(gamepad1.left_stick_x, -gamepad1.left_stick_y);
+            aTan = Math.toDegrees(-Math.atan2(gamepad1.left_stick_x, -gamepad1.left_stick_y)) + 180;
+
             if (gamepad1.left_stick_x + gamepad1.left_stick_y == 0){
-                aTan = 0;
+                aTan = 180;
             }
 
-            turnPowerRight = robot.odoPID(6.333 * 57.2958 * aTan, rightPodPosition);
-            turnPowerLeft = robot.odoPID(6.333 * 57.2958 * aTan, leftPodPosition);
+            currentAngle = rightPodPosition/6.333;
+            newAngle = aTan;
 
-            right1.setPower(power + turnPowerLeft + gamepad1.right_stick_x);
-            right2.setPower(-power + turnPowerLeft - gamepad1.right_stick_x);
-            left1.setPower(power + turnPowerLeft - gamepad1.right_stick_x);
-            left2.setPower(-power + turnPowerLeft + gamepad1.right_stick_x);
+            rotations = Math.floor(currentAngle/360);
+            newAngle = newAngle + 360 * rotations;
+            opposite = newAngle + 188;
+
+            if(currentAngle < 0 && newAngle > 0){ // normal - dealer
+                distance = newAngle - currentAngle;
+            } else if (currentAngle > 0 && newAngle < 0){
+                distance = currentAngle - newAngle;
+            } else {
+                distance = Math.abs(Math.abs(currentAngle) - Math.abs(newAngle));
+            }
+
+            if(currentAngle < 0 && opposite > 0) { //opo - dealer
+                oppositedistance = opposite - currentAngle;
+            } else if (currentAngle > 0 && opposite < 0){
+                oppositedistance = currentAngle - opposite;
+            } else {
+                oppositedistance = Math.abs(Math.abs(currentAngle) - Math.abs(opposite));
+            }
+
+            //decide what way is shorter. for example if currentAngle is 350 and new =Angle is 370 then back to 10
+
+            if (distance > Math.abs(Math.abs(currentAngle) - Math.abs(newAngle + 360 ))) {
+                newAngle = newAngle + 360;
+                if(currentAngle < 0 && newAngle > 0){ // normal - dealer
+                    distance = newAngle - currentAngle;
+                } else if (currentAngle > 0 && newAngle < 0){
+                    distance = currentAngle - newAngle;
+                } else {
+                    distance = Math.abs(Math.abs(currentAngle) - Math.abs(newAngle));
+                }
+            }
+            else if (distance > Math.abs(Math.abs(currentAngle) - Math.abs(newAngle - 360))) {
+                newAngle = newAngle - 360;
+                if(currentAngle < 0 && newAngle > 0){ // normal - dealer
+                    distance = newAngle - currentAngle;
+                } else if (currentAngle > 0 && newAngle < 0){
+                    distance = currentAngle - newAngle;
+                } else {
+                    distance = Math.abs(Math.abs(currentAngle) - Math.abs(newAngle));
+                }
+            }
+            else {
+                distance = Math.abs(Math.abs(currentAngle) - Math.abs(newAngle));
+            }
+
+            if(oppositedistance > Math.abs((opposite + 360) - Math.abs(currentAngle))) {//does the same for the opposite
+                opposite += 360;
+                if(currentAngle < 0 && opposite > 0) { //opo - dealer
+                    oppositedistance = opposite - currentAngle;
+                } else if (currentAngle > 0 && opposite < 0){
+                    oppositedistance = currentAngle - opposite;
+                } else {
+                    oppositedistance = Math.abs(Math.abs(currentAngle) - Math.abs(opposite));
+                }
+            }
+            else if (oppositedistance > Math.abs((opposite - 360) - Math.abs(currentAngle))){
+                opposite -= 360;
+                if(currentAngle < 0 && opposite > 0) { //opo - dealer
+                    oppositedistance = opposite - currentAngle;
+                } else if (currentAngle > 0 && opposite < 0){
+                    oppositedistance = currentAngle - opposite;
+                } else {
+                    oppositedistance = Math.abs(Math.abs(currentAngle) - Math.abs(opposite));
+                }
+            }
+
+            if(oppositedistance < distance){
+                finalAngle = opposite;
+                wheelDirection = -1;
+            } else {
+                finalAngle = newAngle;
+                wheelDirection = 1;
+            }
+
+
+
+
+            if(Math.abs(gamepad1.left_stick_x) > 0.1){
+                turnEncoder = gamepad1.right_stick_x * 45 * 6.333;
+                turnPower = 0;
+            }else{
+                turnEncoder=0;
+                turnPower=gamepad1.right_stick_x;
+            }
+
+            turnPowerRight = robot.odoPID(6.333 *  finalAngle - turnEncoder, rightPodPosition);
+            turnPowerLeft = robot.odoPID(6.333 *  finalAngle + turnEncoder, leftPodPosition);
+
+            right1.setPower(wheelDirection * power + turnPowerRight - turnPower);
+            right2.setPower(wheelDirection * -power + turnPowerRight + turnPower);
+            left1.setPower(wheelDirection * power + turnPowerLeft + turnPower);
+            left2.setPower(wheelDirection * -power + turnPowerLeft - turnPower);
 
 
             telemetry.addData("turnPowerLeft", turnPowerLeft);
-            telemetry.addData("aTan degrees", 57.2958 * aTan);
+            telemetry.addData("aTan degrees", aTan);
             telemetry.addData("stick power", power);
             telemetry.addData("three power", right1.getPower());
             telemetry.addData("four power", right2.getPower());
@@ -90,8 +188,5 @@ public class swerveAttempt extends LinearOpMode
             telemetry.update();
 
         }
-
-
     }
-
 }

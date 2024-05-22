@@ -95,6 +95,24 @@ public class robotHardware extends LinearOpMode
     double GeneralPIDMaxIntegral = 1.0;
     double GeneralPIDMotorPower = 0;
 
+    //PID2 general Variables
+
+    public static double GeneralF2 = 0.001; // = 32767 / maxV      (do not edit from this number)
+    public static double GeneralP2 = 0.0025; // = 0.1 * F           (raise till real's apex touches Var apex)
+    public static double GeneralI2 = 0;// = 0.1 * P           (fine ajustment of P)
+    public static double GeneralD2 = 0.0000; // = 0                     (raise to reduce ocolation)
+
+    double GeneralPIDCurrentTime2 = 0;
+    double GeneralPIDTime2 = 0;
+    double GeneralPIDLastTime2 = 0;
+    double GeneralPIDError2 = 0;
+    double GeneralPIDPreviousError2 = 0;
+    double GeneralPIDTotalError2 = 0;
+    double GeneralPIDMinIntegral2 = -1.0;
+    double GeneralPIDMaxIntegral2 = 1.0;
+    double GeneralPIDMotorPower2 = 0;
+
+
     public robotHardware(HardwareMap ahwMap)
     {
         /*
@@ -685,6 +703,25 @@ public class robotHardware extends LinearOpMode
             GeneralPIDMotorPower = 0;
         }
         return GeneralPIDMotorPower;
+    }
+
+    public double odoPID2(double target, double current){
+        GeneralPIDPreviousError2 = GeneralPIDError2;
+        GeneralPIDError2 = target - current;
+        GeneralPIDLastTime2 = GeneralPIDCurrentTime2;
+        GeneralPIDCurrentTime2 = (double) System.nanoTime()/1E9;
+        time = GeneralPIDCurrentTime2 - GeneralPIDLastTime2;
+        GeneralPIDTotalError2 += time * GeneralPIDError2;
+        GeneralPIDTotalError2 = GeneralPIDTotalError2 < GeneralPIDMinIntegral2 ? GeneralPIDMinIntegral2: Math.min(GeneralPIDMaxIntegral2, GeneralPIDTotalError2);
+
+        GeneralPIDMotorPower2 = (GeneralP2 * GeneralPIDError2)
+                + (GeneralI2 * GeneralPIDTotalError2)
+                + (GeneralD2 * (GeneralPIDError2 - GeneralPIDPreviousError2) / time)
+                + (GeneralF2 * (GeneralPIDError2/Math.abs(GeneralPIDError2)));
+        if (Double.isNaN(GeneralPIDMotorPower2)){
+            GeneralPIDMotorPower2 = 0;
+        }
+        return GeneralPIDMotorPower2;
     }
 
     public void runOpMode(){}
