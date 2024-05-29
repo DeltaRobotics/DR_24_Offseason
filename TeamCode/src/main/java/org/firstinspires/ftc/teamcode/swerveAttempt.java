@@ -25,7 +25,7 @@ public class swerveAttempt extends LinearOpMode
     double turnPowerLeft = 0; //angle of the left stick
     double turnEncoder = 0;
     double turnPower = 0;
-    double currentAngle = 0;
+    double currentAngle = 180;
     double newAngle = 0;
     double rotations = 0;
     double distance = 0;
@@ -33,6 +33,7 @@ public class swerveAttempt extends LinearOpMode
     double oppositedistance = 0;
     double finalAngle = 0;
     int wheelDirection = 0;
+    double encoderTicksPerDegree = 6.40333;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -77,7 +78,9 @@ public class swerveAttempt extends LinearOpMode
                 aTan = 180;
             }
 
-            currentAngle = rightPodPosition/6.333;
+
+            //start of complex things
+            currentAngle = rightPodPosition/encoderTicksPerDegree;
             newAngle = aTan;
 
             rotations = Math.floor(currentAngle/360);
@@ -154,25 +157,25 @@ public class swerveAttempt extends LinearOpMode
                 finalAngle = newAngle;
                 wheelDirection = 1;
             }
-
+            //end of complex things
 
 
 
             if(Math.abs(gamepad1.left_stick_x) > 0.1){
-                turnEncoder = gamepad1.right_stick_x * 45 * 6.333;
+                turnEncoder = gamepad1.right_stick_x * 45 * encoderTicksPerDegree;
                 turnPower = 0;
             }else{
                 turnEncoder=0;
                 turnPower=gamepad1.right_stick_x;
             }
 
-            turnPowerRight = robot.odoPID(6.333 *  finalAngle - turnEncoder, rightPodPosition);
-            turnPowerLeft = robot.odoPID(6.333 *  finalAngle + turnEncoder, leftPodPosition);
+            turnPowerRight = robot.odoPID(encoderTicksPerDegree *  finalAngle - turnEncoder, rightPodPosition);
+            turnPowerLeft = robot.odoPID(encoderTicksPerDegree *  finalAngle + turnEncoder, leftPodPosition);
 
-            right1.setPower(wheelDirection * power + turnPowerRight - turnPower);
-            right2.setPower(wheelDirection * -power + turnPowerRight + turnPower);
-            left1.setPower(wheelDirection * power + turnPowerLeft + turnPower);
-            left2.setPower(wheelDirection * -power + turnPowerLeft - turnPower);
+            right1.setPower(wheelDirection * power + turnPowerRight - turnPower * wheelDirection);
+            right2.setPower(wheelDirection * -power + turnPowerRight + turnPower * wheelDirection);
+            left1.setPower(wheelDirection * power + turnPowerLeft + turnPower * wheelDirection);
+            left2.setPower(wheelDirection * -power + turnPowerLeft - turnPower * wheelDirection);
 
 
             telemetry.addData("turnPowerLeft", turnPowerLeft);
@@ -184,7 +187,7 @@ public class swerveAttempt extends LinearOpMode
             //one +     two -
             telemetry.addData("delta1", rightPodPosition);
             telemetry.addData("delta2", leftPodPosition);
-            telemetry.addData("real angle",(rightPodPosition / 6.333));
+            telemetry.addData("real angle",(rightPodPosition / encoderTicksPerDegree));
             telemetry.update();
 
         }
