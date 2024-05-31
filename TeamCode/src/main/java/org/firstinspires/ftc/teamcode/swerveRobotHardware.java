@@ -102,7 +102,7 @@ public class swerveRobotHardware extends LinearOpMode
     public static double GeneralF = 0.001; // = 32767 / maxV      (do not edit from this number)
     public static double GeneralP = 0.0025; // = 0.1 * F           (raise till real's apex touches Var apex)
     public static double GeneralI = 0;// = 0.1 * P           (fine adjustment of P)
-    public static double GeneralD = 0.0000; // = 0                     (raise to reduce oscillation)
+    public static double GeneralD = 0; // = 0                     (raise to reduce oscillation)
 
     double GeneralPIDCurrentTime = 0;
     double GeneralPIDTime = 0;
@@ -165,7 +165,7 @@ public class swerveRobotHardware extends LinearOpMode
 
         //odometry init (use the motors objects that the odometers are plugged into)
         leftEncoder = left1;
-        rightEncoder =left2;
+        rightEncoder = left2;
         perpendicularEncoder = right1;
 
         odometers[0] = leftEncoder;
@@ -209,7 +209,7 @@ public class swerveRobotHardware extends LinearOpMode
 
         rotations = Math.floor(currentAngle/360);
         newAngle = newAngle + 360 * rotations;
-        opposite = newAngle + 188;
+        opposite = newAngle + 180;
 
         if(currentAngle < 0 && newAngle > 0){ // normal - dealer
             distance = newAngle - currentAngle;
@@ -283,9 +283,7 @@ public class swerveRobotHardware extends LinearOpMode
         }
         //end of complex things
 
-
-
-        if(Math.abs(strafeDrive) > 0.1){
+        if((aTan < 315 && aTan > 225) || (aTan < 135 && aTan > 45)){
             turnEncoder = heading * 45 * encoderTicksPerDegree;
             turnPower = 0;
         }else{
@@ -296,9 +294,7 @@ public class swerveRobotHardware extends LinearOpMode
         turnPowerRight = odoPID(encoderTicksPerDegree *  finalAngle - turnEncoder, rightPodPosition);
         turnPowerLeft = odoPID(encoderTicksPerDegree *  finalAngle + turnEncoder, leftPodPosition);
     }
-
-    public void resetDriveEncoders()
-    {
+    public void resetDriveEncoders() {
         right1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         left1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

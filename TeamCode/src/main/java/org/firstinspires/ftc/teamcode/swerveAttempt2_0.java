@@ -34,7 +34,8 @@ public class swerveAttempt2_0 extends LinearOpMode
             //one +     two -
             telemetry.addData("delta1", robot.rightPodPosition);
             telemetry.addData("delta2", robot.leftPodPosition);
-            telemetry.addData("real angle",(robot.rightPodPosition / robot.encoderTicksPerDegree));
+            telemetry.addData("current angle",robot.currentAngle);
+            telemetry.addData("final angle",robot.finalAngle);
             telemetry.update();
 
         }
