@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode;
-/*
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 
- */
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,10 +16,11 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * Created by User on 10/1/2022.
  */
-//@Config //We need this for Dashboard to change variables
+@Config //We need this for Dashboard to change variables
 public class swerveRobotHardware extends LinearOpMode
 {
-    //FtcDashboard dashboard = FtcDashboard.getInstance();
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    //telemetry = dashboard.getTelemetry(); //This is used to read telemetry on the computer
     //drive motors
     public DcMotor right1 = null;
     public DcMotor right2 = null;
@@ -136,10 +137,10 @@ public class swerveRobotHardware extends LinearOpMode
     {
 
         //drive motors
-        right1 = ahwMap.dcMotor.get("three");
-        right2 = ahwMap.dcMotor.get("four");
-        left1  = ahwMap.dcMotor.get("one");
-        left2  = ahwMap.dcMotor.get("two");
+        right1 = ahwMap.dcMotor.get("right1");
+        right2 = ahwMap.dcMotor.get("right2");
+        left1  = ahwMap.dcMotor.get("left1");
+        left2  = ahwMap.dcMotor.get("left2");
 
         right1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         right2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
