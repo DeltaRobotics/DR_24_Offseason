@@ -61,7 +61,7 @@ public class swerveRobotHardware extends LinearOpMode
     double opposite = 0;
     double oppositedistance = 0;
     double finalAngle = 0;
-    int wheelDirection = 0;
+    int wheelDirection = 1;
     double encoderTicksPerDegree = 6.40333;
 
     //PID Drive Variables
@@ -284,6 +284,7 @@ public class swerveRobotHardware extends LinearOpMode
         }
         //end of complex things
 
+        //turn code
         if((aTan < 315 && aTan > 225) || (aTan < 135 && aTan > 45)){
             turnEncoder = heading * 45 * encoderTicksPerDegree;
             turnPower = 0;
