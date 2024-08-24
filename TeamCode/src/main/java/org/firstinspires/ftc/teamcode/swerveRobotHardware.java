@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -19,7 +17,7 @@ import com.qualcomm.robotcore.util.Range;
 @Config //We need this for Dashboard to change variables
 public class swerveRobotHardware extends LinearOpMode
 {
-    FtcDashboard dashboard = FtcDashboard.getInstance();
+    //FtcDashboard dashboard = FtcDashboard.getInstance();
     //telemetry = dashboard.getTelemetry(); //This is used to read telemetry on the computer
     //drive motors
     public DcMotor right1 = null;
@@ -32,6 +30,7 @@ public class swerveRobotHardware extends LinearOpMode
     public DcMotor leftEncoder = null;
     public DcMotor rightEncoder = null;
     public DcMotor perpendicularEncoder = null;
+
 
     public DcMotor[] odometers = new DcMotor[3];
     public DcMotor[] drive = new DcMotor[4];
@@ -58,11 +57,12 @@ public class swerveRobotHardware extends LinearOpMode
     double newAngle = 0;
     double rotations = 0;
     double distance = 0;
-    double opposite = 0;
-    double oppositedistance = 0;
+    double oppositeAngle = 0;
+    double oppositeDistance = 0;
     double finalAngle = 0;
     int wheelDirection = 1;
-    double encoderTicksPerDegree = 6.40333;
+    double encoderTicksPerDegree = 78.38167;//6.40333;//78.38167
+    int testing = 0;
 
     //PID Drive Variables
 
@@ -100,10 +100,10 @@ public class swerveRobotHardware extends LinearOpMode
 
     //PID general Variables
 
-    public static double GeneralF = 0.001; // = 32767 / maxV      (do not edit from this number)
-    public static double GeneralP = 0.0025; // = 0.1 * F           (raise till real's apex touches Var apex)
+    public static double GeneralF = 0.05; // = 32767 / maxV      (do not edit from this number)
+    public static double GeneralP = 0.000175; // = 0.1 * F           (raise till real's apex touches Var apex)
     public static double GeneralI = 0;// = 0.1 * P           (fine adjustment of P)
-    public static double GeneralD = 0; // = 0                     (raise to reduce oscillation)
+    public static double GeneralD = 0.000000; // = 0                     (raise to reduce oscillation)
 
     double GeneralPIDCurrentTime = 0;
     double GeneralPIDTime = 0;
@@ -147,16 +147,12 @@ public class swerveRobotHardware extends LinearOpMode
         left1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         left2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
         right1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        right2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        left1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        left2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        right1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        left1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        left2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        right1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        right2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        left1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        left2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         right1.setPower(0);
         right2.setPower(0);
@@ -169,8 +165,9 @@ public class swerveRobotHardware extends LinearOpMode
         rightEncoder = left2;
         perpendicularEncoder = right1;
 
+
         odometers[0] = leftEncoder;
-        odometers[1] = rightEncoder;
+        //odometers[1] = rightEncoder;
         odometers[2] = perpendicularEncoder;
 
         drive[0] = right1;
@@ -186,13 +183,13 @@ public class swerveRobotHardware extends LinearOpMode
     public void swerveDrive(double forwardDrive, double strafeDrive, double heading, double speed){
         swerveCalculations(forwardDrive, strafeDrive, heading);
 
-        right1.setPower((wheelDirection * power * speed) + turnPowerRight - turnPower * wheelDirection);
-        right2.setPower((wheelDirection * -power * speed) + turnPowerRight + turnPower * wheelDirection);
-        left1.setPower((wheelDirection * power * speed) + turnPowerLeft + turnPower * wheelDirection);
-        left2.setPower((wheelDirection * -power * speed) + turnPowerLeft - turnPower * wheelDirection);
+        right1.setPower((wheelDirection * power * speed) - turnPowerRight - turnPower * wheelDirection);
+        right2.setPower((wheelDirection * -power * speed) - turnPowerRight + turnPower * wheelDirection);
+        //left1.setPower((wheelDirection * power * speed) + turnPowerLeft + turnPower * wheelDirection);
+        //left2.setPower((wheelDirection * -power * speed) + turnPowerLeft - turnPower * wheelDirection);
     }
     public void swerveCalculations(double forwardDrive, double strafeDrive, double heading){
-        rightPodPosition = right2.getCurrentPosition() + right1.getCurrentPosition();
+        rightPodPosition = right1.getCurrentPosition();
         leftPodPosition  = left2.getCurrentPosition()  + left1.getCurrentPosition();
 
         power = Math.abs(forwardDrive) + Math.abs(strafeDrive);
@@ -203,86 +200,70 @@ public class swerveRobotHardware extends LinearOpMode
             aTan = 180;
         }
 
+        testing = 0;
 
         //start of complex things
         currentAngle = rightPodPosition/encoderTicksPerDegree;
-        newAngle = aTan;
+        newAngle = aTan; // stick pos
 
-        rotations = Math.floor(currentAngle/360);
-        newAngle = newAngle + 360 * rotations;
-        opposite = newAngle + 180;
-
-        if(currentAngle < 0 && newAngle > 0){ // normal - dealer
-            distance = newAngle - currentAngle;
-        } else if (currentAngle > 0 && newAngle < 0){
-            distance = currentAngle - newAngle;
-        } else {
-            distance = Math.abs(Math.abs(currentAngle) - Math.abs(newAngle));
-        }
-
-        if(currentAngle < 0 && opposite > 0) { //opo - dealer
-            oppositedistance = opposite - currentAngle;
-        } else if (currentAngle > 0 && opposite < 0){
-            oppositedistance = currentAngle - opposite;
-        } else {
-            oppositedistance = Math.abs(Math.abs(currentAngle) - Math.abs(opposite));
-        }
-
-        //decide what way is shorter. for example if currentAngle is 350 and new =Angle is 370 then back to 10
-
-        if (distance > Math.abs(Math.abs(currentAngle) - Math.abs(newAngle + 360 ))) {
-            newAngle = newAngle + 360;
-            if(currentAngle < 0 && newAngle > 0){ // normal - dealer
-                distance = newAngle - currentAngle;
-            } else if (currentAngle > 0 && newAngle < 0){
-                distance = currentAngle - newAngle;
-            } else {
-                distance = Math.abs(Math.abs(currentAngle) - Math.abs(newAngle));
-            }
-        }
-        else if (distance > Math.abs(Math.abs(currentAngle) - Math.abs(newAngle - 360))) {
-            newAngle = newAngle - 360;
-            if(currentAngle < 0 && newAngle > 0){ // normal - dealer
-                distance = newAngle - currentAngle;
-            } else if (currentAngle > 0 && newAngle < 0){
-                distance = currentAngle - newAngle;
-            } else {
-                distance = Math.abs(Math.abs(currentAngle) - Math.abs(newAngle));
-            }
+        if (currentAngle > 0){
+            rotations = Math.floor(currentAngle/360);
         }
         else {
-            distance = Math.abs(Math.abs(currentAngle) - Math.abs(newAngle));
+            rotations = Math.ceil(currentAngle/360);
+        }
+        newAngle = newAngle + 360 * rotations; // stick pos + 360 for every rotation
+        oppositeAngle = newAngle + 180;
+
+
+        distance = distanceCalculator(currentAngle,newAngle);
+
+
+        //decide what way is shorter. for example if currentAngle is 350 and new = Angle is 370 then back to 20
+
+        if (distance > distanceCalculator(currentAngle,newAngle + 360)) {
+            // decides if new angle should wrap one rotation +
+            newAngle = newAngle + 360;
+            distance = distanceCalculator(currentAngle,newAngle);
+        }
+        else if (distance > distanceCalculator(currentAngle,newAngle - 360)) {
+            // decides if new angle should wrap one rotation -
+            newAngle = newAngle - 360;
+            distance = distanceCalculator(currentAngle,newAngle);
+        }
+        else {
+            distance = distanceCalculator(currentAngle,newAngle);
         }
 
-        if(oppositedistance > Math.abs((opposite + 360) - Math.abs(currentAngle))) {//does the same for the opposite
-            opposite += 360;
-            if(currentAngle < 0 && opposite > 0) { //opo - dealer
-                oppositedistance = opposite - currentAngle;
-            } else if (currentAngle > 0 && opposite < 0){
-                oppositedistance = currentAngle - opposite;
-            } else {
-                oppositedistance = Math.abs(Math.abs(currentAngle) - Math.abs(opposite));
-            }
+        oppositeDistance = distanceCalculator(currentAngle, oppositeAngle);
+
+        if (oppositeDistance > distanceCalculator(currentAngle,newAngle - 180) && distanceCalculator(currentAngle,newAngle - 180) < 180){
+            //distanceCalculator(currentAngle,newAngle - 180)       This checks if it would be faster to go around the circle.
+            oppositeAngle = newAngle - 180;
+            oppositeDistance = distanceCalculator(currentAngle, oppositeAngle);
+            testing = 2;
         }
-        else if (oppositedistance > Math.abs((opposite - 360) - Math.abs(currentAngle))){
-            opposite -= 360;
-            if(currentAngle < 0 && opposite > 0) { //opo - dealer
-                oppositedistance = opposite - currentAngle;
-            } else if (currentAngle > 0 && opposite < 0){
-                oppositedistance = currentAngle - opposite;
-            } else {
-                oppositedistance = Math.abs(Math.abs(currentAngle) - Math.abs(opposite));
-            }
+        if (oppositeDistance > distanceCalculator(currentAngle,newAngle + 180) && distanceCalculator(currentAngle,newAngle + 180) < 180){
+            oppositeAngle = newAngle + 180;
+            oppositeDistance = distanceCalculator(currentAngle, oppositeAngle);
+            testing = 1;
         }
 
-        if(oppositedistance < distance){
-            finalAngle = opposite;
+
+        if(oppositeDistance < distance){
+            finalAngle = oppositeAngle;
             wheelDirection = -1;
         } else {
             finalAngle = newAngle;
             wheelDirection = 1;
         }
+
+
+
         //end of complex things
+
+        //uncomment this and comment out the part above to remove fancy turning. good for testing
+        //finalAngle = aTan;
 
         //turn code
         if((aTan < 315 && aTan > 225) || (aTan < 135 && aTan > 45)){
@@ -296,6 +277,20 @@ public class swerveRobotHardware extends LinearOpMode
         turnPowerRight = odoPID(encoderTicksPerDegree *  finalAngle - turnEncoder, rightPodPosition);
         turnPowerLeft = odoPID(encoderTicksPerDegree *  finalAngle + turnEncoder, leftPodPosition);
     }
+
+    public double distanceCalculator(double currentAngle, double newAngle){
+        double x = 0;
+        if(currentAngle < 0 && newAngle >= 0){  //if current = - and new = +
+            x = newAngle - currentAngle;
+        } else if (currentAngle >= 0 && newAngle < 0){ //if current = + and new = -
+            x = currentAngle - newAngle;
+        } else {
+            x = Math.abs(currentAngle - newAngle);
+        }
+        return x;
+    }
+
+
     public void resetDriveEncoders() {
         right1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@TeleOp(name="outreachBotArm")
+@TeleOp(name="outreachBot")
 //@Disabled
 
 public class outreachBotArm extends LinearOpMode
@@ -60,10 +60,10 @@ public class outreachBotArm extends LinearOpMode
         arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
-        wrist = hardwareMap.servo.get("wrist");
-        clawR = hardwareMap.servo.get("clawR");
-        clawL = hardwareMap.servo.get("clawL");
-        slides = hardwareMap.servo.get("slides");
+       wrist = hardwareMap.servo.get("wrist");
+       clawR = hardwareMap.servo.get("clawR");
+       clawL = hardwareMap.servo.get("clawL");
+       slides = hardwareMap.servo.get("slides");
 
         wrist.setPosition(.37);
         clawL.setPosition(.6);
@@ -99,25 +99,25 @@ public class outreachBotArm extends LinearOpMode
                 b = true;
             }
 
-            if (gamepad1.x) {
-                Encoder = 45;
-                wrist.setPosition(.37);
-            }
-            if (gamepad1.y) {
-                Encoder = 340;
-                wrist.setPosition(.57);
-            }
+        if (gamepad1.x) {
+            Encoder = 45;
+            wrist.setPosition(.37);
+        }
+        if (gamepad1.y) {
+            Encoder = 340;
+            wrist.setPosition(.57);
+        }
 
-            if (gamepad1.right_bumper){
-                clawL.setPosition(.4);
-                clawR.setPosition(.65);
-            }
-            if (gamepad1.left_bumper){
-                clawL.setPosition(.6);
-                clawR.setPosition(.5);
-            }
+        if (gamepad1.right_bumper){
+          clawL.setPosition(.4);
+          clawR.setPosition(.65);
+        }
+        if (gamepad1.left_bumper){
+            clawL.setPosition(.6);
+            clawR.setPosition(.5);
+        }
 
-            servoFineAdjust(slides,gamepad1.dpad_right,gamepad1.dpad_left,.01);
+        //servoFineAdjust(slides,gamepad1.dpad_right,gamepad1.dpad_left,.01);
 
 
 

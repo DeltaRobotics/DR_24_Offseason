@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 
 @TeleOp(name="swerveAttempt2_0")
@@ -19,8 +17,8 @@ public class swerveAttempt2_0 extends LinearOpMode
 
         swerveRobotHardware robot = new swerveRobotHardware(hardwareMap);
 
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        telemetry = dashboard.getTelemetry();
+        //FtcDashboard dashboard = FtcDashboard.getInstance();
+        //telemetry = dashboard.getTelemetry();
 
 
         waitForStart();
@@ -29,17 +27,30 @@ public class swerveAttempt2_0 extends LinearOpMode
 
             robot.swerveDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, 1);
 
-            telemetry.addData("turnPowerLeft", robot.turnPowerLeft);
+
+
+            telemetry.addData("turnPowerRight", robot.turnPowerRight);
             telemetry.addData("aTan degrees", robot.aTan);
-            telemetry.addData("stick power", robot.power);
-            telemetry.addData("three power", robot.right1.getPower());
-            telemetry.addData("four power", robot.right2.getPower());
+            telemetry.addData("newAngle", robot.newAngle);
+            telemetry.addData("oppo angle ", robot.oppositeAngle);
+            telemetry.addData("rotations ", robot.rotations);
+            telemetry.addData("robot power", robot.power);
+            telemetry.addData("", null);
+            telemetry.addData("Powers", null);
+            telemetry.addData("right 1", robot.right1.getPower());
+            telemetry.addData("right 2", robot.right2.getPower());
+            telemetry.addData("left 1", robot.left1.getPower());
+            telemetry.addData("left 2", robot.left2.getPower());
 
             //one +     two -
-            telemetry.addData("delta1", robot.rightPodPosition);
-            telemetry.addData("delta2", robot.leftPodPosition);
-            telemetry.addData("current angle",robot.currentAngle);
+            telemetry.addData("right pod pos", robot.rightPodPosition);
+            telemetry.addData("left pod pos", robot.leftPodPosition);
+            telemetry.addData("current angle right",robot.currentAngle);
             telemetry.addData("final angle",robot.finalAngle);
+            telemetry.addData("wheel Direction",robot.wheelDirection);
+            telemetry.addData("distance",robot.distance);
+            telemetry.addData("oppo-distance",robot.oppositeDistance);
+            telemetry.addData("testing",robot.testing);
             telemetry.update();
 
         }

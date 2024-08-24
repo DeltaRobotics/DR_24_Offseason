@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 @TeleOp(name="introToJavaBot")
-//@Disabled
+@Disabled
 
 public class introToJavaBot extends LinearOpMode
 {
@@ -126,16 +126,16 @@ public class introToJavaBot extends LinearOpMode
 
 
             //fine adjust
-            if(gamepad1.x&&buttonx){
+            if(gamepad1.x && buttonx){
                 wrist.setPosition(wrist.getPosition()-.05);
-                buttonx=false;
+                buttonx = false;
             }
             else if(gamepad1.y&&buttony){
                 buttony=false;
                 wrist.setPosition(wrist.getPosition()+.05);
             }
-            if(!gamepad1.x&&!buttonx){
-                buttonx=true;
+            if(!gamepad1.x && !buttonx){
+                buttonx = true;
             }
             if(!gamepad1.y&&!buttony) {
                 buttony = true;

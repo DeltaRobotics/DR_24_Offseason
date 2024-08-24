@@ -115,7 +115,7 @@ public class robotHardware extends LinearOpMode
 
     public robotHardware(HardwareMap ahwMap)
     {
-        /*
+
         //dive motors
         motorRF = ahwMap.dcMotor.get("motorRF");
         motorLF = ahwMap.dcMotor.get("motorLF");
@@ -156,7 +156,7 @@ public class robotHardware extends LinearOpMode
         drive[2] = motorLB;
         drive[3] = motorLF;
 
-         */
+
 
         ControlHub_VoltageSensor = ahwMap.get(VoltageSensor.class, "Control Hub");
     }
